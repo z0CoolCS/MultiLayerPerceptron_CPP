@@ -99,8 +99,8 @@ class Tanh: public Layer
 		// 
 		// 
 		// 
-		// [111]
-		return graout.array().exp();
+		// []
+		//return graout.array().exp();
 		return grad_output.array() * grad_input.array();
 	}
 	
