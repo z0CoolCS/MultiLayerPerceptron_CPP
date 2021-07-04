@@ -10,11 +10,11 @@ class Sigmoid : public Layer {
         std::cout<<1<<std::endl;
     }
 
-    void forward (Eigen::VectorXd input) {
+    Eigen::MatrixXd forward (Eigen::MatrixXd input) {
         //std::cout<<input.exp()<<std::endl;
     } 
 
-    void backward (Eigen::VectorXd input, Eigen::VectorXd grad) {
+    Eigen::MatrixXd backward (Eigen::MatrixXd input, Eigen::MatrixXd grad) {
     }
 };
 
