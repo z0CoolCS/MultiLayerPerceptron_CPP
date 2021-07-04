@@ -17,10 +17,10 @@ class Layer
 {
   public:
 	
-    virtual void print() { }
+    virtual void print() ;
     
-    virtual MatrixXd forward(MatrixXd input) {MatrixXd ans(input.rows() , input.cols() );  return ans;} 
-    virtual MatrixXd backward(MatrixXd input, MatrixXd grad_output) {MatrixXd ans(input.rows() , grad_output.cols() );  return ans;}
+    virtual MatrixXd forward(MatrixXd input );
+    virtual MatrixXd backward(MatrixXd input, MatrixXd grad_output) ;
     //virtual MatrixXd backward(MatrixXd input , MatrixXd grad_output) { }
     
 };
