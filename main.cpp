@@ -1,19 +1,20 @@
 #include <iostream>
 #include "Eigen/Dense"
 #include "MLP.h"
-#include "Layer/ActFunc/Sigmoid.h"
+#include "Utils/utils.h"
 
 using namespace std;
 using namespace Eigen;
 
 int main () {
 
-    MatrixXd x = MatrixXd::Random(2, 2);
-    //cout << x << endl;
-    MLP a;
-    Sigmoid s;
-    VectorXd v = VectorXd::Random(2);
-    s.forward(v);
+    string path = "data_proy4.csv";
+    int rowsdata = 568;
+    int colsdata = 31;
+
+    MatrixXd x = read_csv(rowsdata, colsdata, path);
+    //MLP a;
+    //a.add_layer("Sigmoid");
 
 
     return 0;
