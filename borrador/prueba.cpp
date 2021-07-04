@@ -46,11 +46,10 @@ class Layer
 {
   public:
 	
-   virtual void print() { }
+    virtual void print(){};
 
     virtual MatrixXd forward(MatrixXd input) {MatrixXd ans(input.rows() , input.cols() );  return ans;} 
     virtual MatrixXd backward(MatrixXd input, MatrixXd grad_output) {MatrixXd ans(input.rows() , grad_output.cols() );  return ans;}
-    //virtual MatrixXd backward(MatrixXd input , MatrixXd grad_output) { }
     
 };
 
@@ -132,7 +131,7 @@ class Linear: public Layer
 		
 		Linear(int input_units, int output_units, double learning_rate = 0.1)
 		{
-			//weights = MatrixXd::Zero(input_units, output_units) * 0.1;
+			
 			weights = MatrixXd::Random (input_units, output_units) ;
 			Learning_rate = learning_rate;
 			biases  =  MatrixXd::Zero(1,output_units);
@@ -324,16 +323,13 @@ double accuracy(MatrixXd x_test, MatrixXd y_test , vector<Layer* > network)
 void train(vector<Layer* > network , MatrixXd x_train , MatrixXd x_valid, MatrixXd x_test, MatrixXd y_train, MatrixXd y_valid, MatrixXd y_test)
 {
 	
-	// cmbiar para batch != divisor de examples;
+
 	int batch = 6;
-	int epochs = 100;
+	int epochs = 25;
 	random_device rd;
     mt19937 g(rd());
 	
-	
-	// x_train = 128
-	// batch_size = 64
-	// para 1 epoca dos iteraciones;	
+
 		
 	for (int e = 0 ; e < epochs ; e++)
 	{

@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../../Eigen/Dense"
+#include "Eigen/Dense"
 #include "../Layer.h"
 
 #ifndef _SIGMOIF_H_
