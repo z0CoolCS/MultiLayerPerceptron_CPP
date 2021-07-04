@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Eigen/Dense"
-//#include "../Layer.h"
+#include "../Layer.h"
+
 
 #ifndef _TAN_H_
 #define _TAN_H_

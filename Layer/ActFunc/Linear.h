@@ -2,6 +2,7 @@
 #include "Eigen/Dense"
 #include "../Layer.h"
 
+using namespace std;
 #ifndef _LINEAR_H_
 #define _LINEAR_H_
 class Linear: public Layer
