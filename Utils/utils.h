@@ -4,6 +4,9 @@
 #include <string>
 #include "../Eigen/Dense"
 
+using namespace std;
+using namespace Eigen;
+
 Eigen::MatrixXd read_csv(int rows, int cols , std::string path)
 {
 

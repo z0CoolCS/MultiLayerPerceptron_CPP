@@ -4,8 +4,8 @@
 #define _LAYER_H_
 class Layer {
     public: 
-        virtual void forward (Eigen::VectorXd) = 0;
-        virtual void backward (Eigen::VectorXd, Eigen::VectorXd) = 0;
+        virtual Eigen::MatrixXd  forward (Eigen::MatrixXd)  {Eigen::MatrixXd defaultMatrix;  return defaultMatrix;} 
+        virtual Eigen::MatrixXd  backward (Eigen::MatrixXd, Eigen::MatrixXd) {Eigen::MatrixXd defaultMatrix;  return defaultMatrix;}
 };
 
 #endif
