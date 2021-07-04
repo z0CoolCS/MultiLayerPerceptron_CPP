@@ -19,7 +19,7 @@ class ReLU : public Layer {
             if (x > 0) { x = 1; }
             else { x = 0; }
         }
-        return input.matrix() * grad;
+        return input.array() * grad.array();
     }
 };
 

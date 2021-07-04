@@ -18,7 +18,7 @@ class Sigmoid : public Layer {
     Eigen::MatrixXd backward (Eigen::MatrixXd input, Eigen::MatrixXd grad) {
         Eigen::ArrayXd sigmoid = 1 / (1 + input.array().exp());
         Eigen::MatrixXd grad_sigmoid = (sigmoid * (1 - sigmoid)).matrix();
-        return grad_sigmoid * grad;
+        return grad_sigmoid.array() * grad.array();
     }
 };
 
