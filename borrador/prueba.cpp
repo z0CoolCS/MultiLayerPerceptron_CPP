@@ -2,7 +2,9 @@
 #include <iostream> 
 #include <vector> 
 #include <Eigen/Dense>
- 
+#include <random>
+#include <sstream> 
+ #include <fstream>
  
 using namespace std; 
 
@@ -66,10 +68,10 @@ class Tanh: public Layer
 			{
 				double x = tanh(input(i , j));
 				grad_input(i , j) = 1 - x*x;
-				cout << x << " ";
+				//cout << x << " ";
 			}
 			
-			cout << endl;
+			//cout << endl;
 		}
 		
 		
@@ -82,8 +84,8 @@ class Tanh: public Layer
 		//cout << grad_output << endl ;
 		//cout << endl;
 		
-		cout << "grad input tahn" << endl;
-		cout << grad_input << endl ;
+		//cout << "grad input tahn" << endl;
+		//cout << grad_input << endl ;
 	
 		// array = matriz;
 		// O(1) ;
@@ -128,7 +130,7 @@ class Linear: public Layer
 		
 		Linear(int input_units, int output_units, double learning_rate = 0.1)
 		{
-			weights = MatrixXd::Random (input_units, output_units);
+			weights = MatrixXd::Random (input_units, output_units) * 0.1;
 			Learning_rate = learning_rate;
 			biases  =  MatrixXd::Zero(1,output_units);
 			
@@ -186,19 +188,19 @@ class Linear: public Layer
 			}
 			// MatrixXd grad_biases = grad_output.mean(axis=0)*input.shape[0];
 			
-			cout << weights << endl;
+			//cout << weights << endl;
 			
-			cout << endl;
+			//cout << endl;
 			
-			cout << "gout" << endl;
-			cout << grad_output << endl;
+			//cout << "gout" << endl;
+			//cout << grad_weights << endl;
 			
-			cout << endl;
+			//cout << endl;
 			weights =  weights - Learning_rate * grad_weights;
 			biases = biases -  Learning_rate * grad_biases;
 			
 			
-			cout << weights << endl;
+			//cout << weights << endl;
 		
 			
 			return grad_input;
@@ -250,7 +252,7 @@ MatrixXd grad_softmax_crossentropy_with_logits( MatrixXd logits , MatrixXd refer
 	 
 	for (int i = 0 ; i < logits.rows() ; i++)
 	{
-		ones_for_answers(i ,  (int)reference_answers(i , 0)  - 1) = 1;
+		ones_for_answers(i ,  (int)reference_answers(i , 0)  - 1 ) = 1;
 		
 		for (int j = 0 ; j < logits.cols() ; j++)
 		{
@@ -275,7 +277,7 @@ vector <MatrixXd> forward ( vector<Layer *> network , MatrixXd x)
 	
 	for (auto l : network)
 	{
-		l -> print();
+		//l -> print();
 		activations.emplace_back( l -> forward ( input ) );
 		
 		input = activations.back();
@@ -291,7 +293,7 @@ vector <MatrixXd> forward ( vector<Layer *> network , MatrixXd x)
 
 
 
-double train(vector<Layer* > network , MatrixXd x , MatrixXd y)
+double train_batch(vector<Layer* > network , MatrixXd x , MatrixXd y)
 {
 	
 	//cout << "ga";
@@ -300,11 +302,7 @@ double train(vector<Layer* > network , MatrixXd x , MatrixXd y)
 	layer_inputs.insert( layer_inputs.end() , layer_activations.begin() , layer_activations.end());
 	MatrixXd logits = layer_activations.back(); // salida
 	
-	
-	//cout << "logits : " << endl;
-	
-	//cout << logits.rows() << " " << logits.cols() << endl;
-	//cout << y.rows() << " " << y.cols() << endl; 
+
 	 
 	MatrixXd loss = softmax_crossentropy_with_logits(logits, y); // ERROR
 	MatrixXd loss_grad  = grad_softmax_crossentropy_with_logits(logits, y);
@@ -318,20 +316,10 @@ double train(vector<Layer* > network , MatrixXd x , MatrixXd y)
 		auto layer = network[layer_index];
 		
 		
-		//layer -> print();
-		//cout << loss_grad << endl;
-		//cout << endl;
-		
-		
-		//cout << "loss grad" << endl;
-		//cout << loss_grad.rows() << " " << loss_grad.cols() << endl;
-		
 		loss_grad = layer -> backward(layer_inputs[layer_index],loss_grad);
 		
-		
-		
 	}	
-	cout << "finish : " << endl;
+	//cout << "finish : " << endl;
 	
 	return loss.mean();
 	
@@ -340,8 +328,77 @@ double train(vector<Layer* > network , MatrixXd x , MatrixXd y)
 
 
 
-// falta leer datos
-// falta iterar en minibatches
+
+
+void train(vector<Layer* > network , MatrixXd x_train , MatrixXd x_valid, MatrixXd y_train, MatrixXd y_valid)
+{
+	
+	// cmbiar para batch != divisor de examples;
+	int batch = 5;
+	int epochs = 2;
+	random_device rd;
+    mt19937 g(rd());
+	
+	
+	for (int e = 0 ; e < epochs ; e++)
+	{
+		
+		//cout << "eposch : " << e << endl; 
+		vector <int> indices(x_train.rows()) ;
+		iota(indices.begin() , indices.end() , 0);
+		shuffle( indices.begin(), indices.end(), g);
+		
+		for (int start = 0 ; start < (int)indices.size() ; start += batch  )
+		{
+			//cout << start << endl;
+			vector <int> indices_batch( indices.begin() + start ,  indices.begin() + start + batch );
+			
+			
+			double error = train_batch( network , x_train(indices_batch, all) , y_train(indices_batch, all) );
+			
+			cout << error << endl;
+		}
+		
+		// validar
+		
+	}
+	
+	 
+}
+
+
+MatrixXd readdata(int rows, int cols , string path)
+{
+	MatrixXd m(rows, cols);
+	ifstream myfile (path);
+	string line, word;
+	int index_row = 0, index_col = 0;
+	while ( getline (myfile,line) ) 
+	{
+        stringstream ss(line);
+        index_col = 0;
+        
+        getline(ss, word, ','); // idomited
+        
+        while (getline(ss, word, ',')) 
+        {
+		    if (word == "M") word = "1";
+		    if (word == "B") word = "2";
+		    
+			m(index_row, index_col) = stod(word);
+			index_col++;          
+        }
+        index_row++;
+        //cout << endl;
+    }
+	
+	return m;
+}
+
+
+// 10 clases
+// output final 2; [ 0.55, 0.66] = 1
+
 // falta predict
 // crear clase network
 
@@ -349,64 +406,86 @@ int main()
 {
 	
 	
-	
-	vector< Layer* > network;
-	
-	
+	//MatrixXd x_train = 100  * ( MatrixXd::Random( examples , caracs) + MatrixXd::Constant( examples , caracs ,1.)); // -1, 1
+	//MatrixXd y_train =  100 * MatrixXd::Random( examples, 1) ;
 	
 	
 
-	int examples = 5;
-	int caracs = 4;
-	int images = 10;
-	
-	// 4 * 20
-	MatrixXd x_train = 100  * ( MatrixXd::Random( examples , caracs) + MatrixXd::Constant( examples , caracs ,1.)); // -1, 1
-	MatrixXd y_train =  100 * MatrixXd::Random( examples, 1) ;
 	
 	
-	for (auto& u : y_train.reshaped())
-	{
-		u = abs(u);
-		u =  (int)u % images;
-		u = floor(u);
-		u += 1;
-	}
+	//for (auto& u : y_train.reshaped())
+	//{
+		//u = abs(u);
+		//u =  (int)u % images;
+		//u = floor(u);
+		//u += 1;
+	//}
+	
+
+	
+	//MatrixXd x_train_train = x_train( seq(0, 129) , all);
+	//MatrixXd x_train_valid = x_train( seq(130, 149) , all);
+	
+	
+	//MatrixXd y_train_train = y_train( seq(0, 129) , all);
+	//MatrixXd y_train_valid = y_train( seq(130, 149) , all);
 	
 	// este entre 1 y 10;
 	
+	// Valid 10%
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	network.push_back(new Linear( x_train.cols() , images ));
-	network.push_back(new Tanh);
-	//network.push_back(new Linear( 4 , 3));
-	
-	
-	
-	cout << y_train << endl;
-	cout << endl << endl;
-	cout << x_train << endl;
 
-	for (int i = 1 ; i <= 2; i++)
-	{
-		cout << train(network , x_train , y_train) << endl;
-	}
-	//for (auto u : network)
-	//{	
-		//u -> print();	
-	//}
+
+	int rowsdata = 569;
+	int colsdata = 31;
+	int hidden = 30;
+	int clases = 10;
+		
+	
+	MatrixXd data = readdata(rowsdata, colsdata, "data.csv");
+	
+	MatrixXd x = data( all , seq(1, last));
+	MatrixXd y = data( all , 0);
+	
+	
+	//int train_size = 0.6 * rowsdata;
+	int train_size = 0.7 * rowsdata;
+	//int test_size = rowdata - train_size;
+	
+	MatrixXd x_train = x( seq( 0 , train_size - 1) , all );
+	MatrixXd x_test = x( seq( train_size , last) , all );
+	
+	
+	
+	//MatrixXd x_train_train = x_train();
+	//MatrixXd x_train_valid = 
+	
+	
+	
+	
+	MatrixXd y_train = y( seq( 0 , train_size - 1) , all );
+	MatrixXd y_test = y( seq( train_size , last) , all );
+	
+	
+	vector< Layer* > network;
+	
+	network.push_back(new Linear( colsdata , hidden ));
+	network.push_back(new Tanh);
+	network.push_back(new Linear( hidden , clases ));
+	network.push_back(new Tanh);
+	// perdida softmax
+	
+	
+	
+	
+	
+	
+	//train(network, x_train_train , x_train_valid , y_train_train , y_train_valid );
+
+	
+	
 
 	
 	return 0;
