@@ -1,6 +1,10 @@
 #include <iostream>
 #include "../Eigen/Dense"
 
+using namespace std;
+
+using namespace Eigen;
+
 Eigen::MatrixXd softmax_crossentropy_with_logits( Eigen::MatrixXd logits , Eigen::MatrixXd reference_answers)
 {
 	Eigen::MatrixXd logits_for_answers( logits.rows() , 1);
@@ -9,7 +13,7 @@ Eigen::MatrixXd softmax_crossentropy_with_logits( Eigen::MatrixXd logits , Eigen
 	for (int i = 0 ; i < logits.rows() ; i++)
 	{
 		
-		logits_for_answers(i , 0) = logits(i , (int)reference_answers(i , 0) - 1);
+		logits_for_answers(i , 0) = logits(i , (int)reference_answers(i , 0));
 		
 		for (int j = 0 ; j < logits.cols() ; j++)
 		{
@@ -34,7 +38,7 @@ Eigen::MatrixXd grad_softmax_crossentropy_with_logits( Eigen::MatrixXd logits , 
 	 
 	for (int i = 0 ; i < logits.rows() ; i++)
 	{
-		ones_for_answers(i ,  (int)reference_answers(i , 0)  - 1 ) = 1;
+		ones_for_answers(i ,  (int)reference_answers(i , 0) ) = 1;
 		
 		for (int j = 0 ; j < logits.cols() ; j++)
 		{
