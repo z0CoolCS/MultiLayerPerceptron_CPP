@@ -6,7 +6,9 @@
 #include "Eigen/Dense"
 #include <random>   
 #include "Layer/ActFunc/Tanh.h"
-#include "Layer/ActFunc/Linear.h"
+#include "Layer/ActFunc/Sigmoid.h"
+#include "Layer/ActFunc/ReLU.h"
+#include "Layer/Linear.h"
 #include "Layer/Layer.h"
 #include "LossFunc/Softmax.h"
 
@@ -71,18 +73,19 @@ class MLP {
         //Sigmoid s;
         if (layer == "SIGMOID") 
         {
-			
+			      network.emplace_back(new Sigmoid);
         } 
         else if (layer == "TANGH") 
         {
-			network.emplace_back(new Tanh);
+			      network.emplace_back(new Tanh);
         } 
         else if (layer == "RELU") 
         {
+			      network.emplace_back(new ReLU);
         }
         else if (layer == "LINEAR") 
         {
-			network.emplace_back(new Linear(input , output , learning_rate));
+			      network.emplace_back(new Linear(input , output , learning_rate));
         }
        
     }
