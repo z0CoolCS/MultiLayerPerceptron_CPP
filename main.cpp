@@ -23,7 +23,7 @@ int main () {
     //cout << x;
     MLP a;
     a.add_layer( "Linear" , x.cols() , 15 );
-    a.add_layer( "ReLU" , 15, 2 );
+    a.add_layer( "Sigmoid" , 15, 2 );
 
 
 	  a.train(x, y) ;
