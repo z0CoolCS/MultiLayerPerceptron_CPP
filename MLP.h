@@ -116,7 +116,7 @@ class MLP {
 	  {
 			cout << "entro" << endl;
 		    int batch = 64;
-		    int epochs = 50;
+		    int epochs = 200;
 		    random_device rd;
 		    mt19937 g(rd());
 		
@@ -144,12 +144,30 @@ class MLP {
 		
 	 void train(MatrixXd x, MatrixXd y)
 	 {	
-		 cout << x.rows() << endl;
-		int rowsdata = x.rows();
+		 
+		int rowsdata = x.rows(); 
+		cout << x.rows() << endl;
+		
+		
+		// train test split
+		random_device rd;
+		mt19937 g(rd());
+		vector<int> indices(rowsdata) ; 
+		iota(indices.begin() , indices.end() , 0);
+		shuffle( indices.begin(), indices.end(), g);
+		
+		
+		  
+        x = x( indices , all);
+		y = y (indices , all);
+	
 		
 		int train_size = 0.7 * rowsdata; 
 		int valid_size = 0.1 * rowsdata;
 
+		
+
+			
 		
 		MatrixXd x_valid =  x( seq( 0 , valid_size - 1) , all );	//56
 		MatrixXd x_train = x( seq( valid_size , train_size - 1) , all ); // 342
