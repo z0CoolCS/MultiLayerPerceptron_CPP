@@ -75,7 +75,7 @@ class MLP {
         {
 			      network.emplace_back(new Sigmoid);
         } 
-        else if (layer == "TANGH") 
+        else if (layer == "TANH") 
         {
 			      network.emplace_back(new Tanh);
         } 
@@ -115,11 +115,13 @@ class MLP {
 	  void train(MatrixXd x_train , MatrixXd x_valid, MatrixXd x_test, MatrixXd y_train, MatrixXd y_valid, MatrixXd y_test)
 	  {
 			cout << "entro" << endl;
-		    int batch = 6;
-		    int epochs = 25;
+		    int batch = 64;
+		    int epochs = 50;
 		    random_device rd;
 		    mt19937 g(rd());
 		
+		
+			int size = x_train.rows(); 
 		    for (int e = 0 ; e < epochs ; e++)
 		    {
 			
@@ -127,14 +129,14 @@ class MLP {
 			      vector <int> indices(x_train.rows()) ;
 			      iota(indices.begin() , indices.end() , 0);
 			      shuffle( indices.begin(), indices.end(), g);
-			
+					
 			      for (int start = 0 ; start < (int)indices.size() ; start += batch  )
 			      {
 				
-				        vector <int> indices_batch( indices.begin() + start ,  indices.begin() + start + batch );
+				        vector <int> indices_batch( indices.begin() + start ,  indices.begin() + min( start + batch , size ) );
 				        train_batch( x_train(indices_batch, all) , y_train(indices_batch, all) );				
 			      }
-			
+					
 			      cout << accuracy( x_valid , y_valid)  << "      " << accuracy( x_test , y_test ) << endl ;
 		    }
 	  }
