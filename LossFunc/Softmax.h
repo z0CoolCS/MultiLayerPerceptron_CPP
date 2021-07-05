@@ -51,5 +51,5 @@ Eigen::MatrixXd grad_softmax_crossentropy_with_logits( Eigen::MatrixXd logits , 
 	}
 	
 	
-	return (logits + ones_for_answers) / logits.rows() ;
+	return (logits - ones_for_answers);
 }
