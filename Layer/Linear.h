@@ -6,7 +6,7 @@ using namespace std;
 #ifndef _LINEAR_H_
 #define _LINEAR_H_
 
-
+using namespace std;
 using namespace Eigen;
 class Linear: public Layer
 {
@@ -21,7 +21,7 @@ class Linear: public Layer
 		Linear(int input_units, int output_units, double learning_rate = 0.1)
 		{
 			
-			weights = MatrixXd::Random (input_units, output_units) ;
+			weights = MatrixXd::Random (input_units, output_units)  * 0.0001;
 			Learning_rate = learning_rate;
 			biases  =  MatrixXd::Zero(1,output_units);
 			
@@ -61,7 +61,8 @@ class Linear: public Layer
 				}
 				
 			}
-			
+			//cout << "grad wwghts" << endl;
+			//cout << grad_weights << endl;
 			weights =  weights - Learning_rate * grad_weights;
 			biases = biases -  Learning_rate * grad_biases;
 			
