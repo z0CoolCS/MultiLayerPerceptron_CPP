@@ -3,6 +3,7 @@
 #include <string>
 #include <functional>
 //#include <Random>
+#include <fstream>
 #include "Eigen/Dense"
 #include <random>   
 #include "Layer/ActFunc/Tanh.h"
@@ -111,21 +112,40 @@ class MLP {
 		
 		    return (double)check / res.rows() * 100;
 	}
-
+	
+	
+	  double get_loss(MatrixXd x_test, MatrixXd y_test )
+	  {	
+			MatrixXd res = x_test;
+		    for (auto l : network)
+		    {
+			      res = l -> forward ( res );
+		    }
+		    
+		    return softmax_crossentropy_with_logits( res , y_test).mean() ;
+			
+	  }
+	  
+	  
+	  
+	  
+	  
 	  void train(MatrixXd x_train , MatrixXd x_valid, MatrixXd x_test, MatrixXd y_train, MatrixXd y_valid, MatrixXd y_test)
 	  {
 			cout << "entro" << endl;
 		    int batch = 64;
-		    int epochs = 200;
+		    int epochs = 2000;
 		    random_device rd;
 		    mt19937 g(rd());
 		
-		
+			ofstream out("graficas/grafica.txt");
+			//out.open ;
+			
 			int size = x_train.rows(); 
 		    for (int e = 0 ; e < epochs ; e++)
 		    {
 			
-			      cout << "                   epoch : " << e << endl; 
+			       
 			      vector <int> indices(x_train.rows()) ;
 			      iota(indices.begin() , indices.end() , 0);
 			      shuffle( indices.begin(), indices.end(), g);
@@ -136,9 +156,18 @@ class MLP {
 				        vector <int> indices_batch( indices.begin() + start ,  indices.begin() + min( start + batch , size ) );
 				        train_batch( x_train(indices_batch, all) , y_train(indices_batch, all) );				
 			      }
-					
-			      cout << accuracy( x_valid , y_valid)  << "      " << accuracy( x_test , y_test ) << endl ;
+				 
+				  double loss = get_loss(x_test, y_test);
+				  
+				  cout << "epoch  : " << e  << "       loss :  " << loss << "   "  <<   "acurraccy  : "<< accuracy(x_test, y_test) << endl; 
+				  out << e + 1 << "," << loss  << "\n";
+			      
 		    }
+		    
+		    double ac = accuracy(x_test, y_test);
+		    cout << "Final Acurracy :" << ac  << endl;
+		    out << ac << "\n";
+		    out.close();
 	  }
 		
 		
@@ -146,7 +175,7 @@ class MLP {
 	 {	
 		 
 		int rowsdata = x.rows(); 
-		cout << x.rows() << endl;
+		//cout << x.rows() << endl;
 		
 		
 		// train test split
@@ -163,23 +192,29 @@ class MLP {
 	
 		
 		int train_size = 0.7 * rowsdata; 
-		int valid_size = 0.1 * rowsdata;
+		//int valid_size = 0.1 * rowsdata;
 
 		
 
 			
 		
-		MatrixXd x_valid =  x( seq( 0 , valid_size - 1) , all );	//56
-		MatrixXd x_train = x( seq( valid_size , train_size - 1) , all ); // 342
+		//MatrixXd x_valid =  x( seq( 0 , valid_size - 1) , all );	//56
+		//MatrixXd x_train = x( seq( valid_size , train_size - 1) , all ); // 342
+		
+		MatrixXd x_train = x( seq(   0 , train_size - 1) , all );
 		MatrixXd x_test = x( seq( train_size , last) , all ); // 171
 		
 		
 		
-		MatrixXd y_valid =  y( seq( 0 , valid_size - 1) , all );	
-		MatrixXd y_train = y( seq( valid_size , train_size - 1) , all );
+		//MatrixXd y_valid =  y( seq( 0 , valid_size - 1) , all );	
+		//MatrixXd y_train = y( seq( valid_size , train_size - 1) , all );
+		MatrixXd y_train = y( seq( 0 , train_size - 1) , all );
 		MatrixXd y_test = y( seq( train_size , last) , all );
 		
-		train(x_train , x_valid , x_test,  y_train , y_valid , y_test);
+		
+		return train( x_train , x_test , x_test,  y_train , y_test , y_test);
+		//train(x_train , x_valid , x_test,  y_train , y_valid , y_test);
+		
 	
 	 }
 };
