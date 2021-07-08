@@ -148,6 +148,9 @@ int main () {
      
 	MatrixXd y = data( all , 0); // clases , columna 0
 	
+	
+	// Solo descomentar. Los datos para hacer graficas se van a generar en el Directorio llamado Graficas
+	
 	// Tanh
 	
 	Tanh1(x, y);
